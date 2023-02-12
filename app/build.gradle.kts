@@ -74,6 +74,7 @@ dependencies {
     implementation("com.google.android.horologist:horologist-compose-tools:$horologist_version")
     implementation("com.google.android.horologist:horologist-tiles:$horologist_version")
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:1.1.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:$composeBom"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
