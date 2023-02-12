@@ -24,12 +24,16 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.kabos.silenttimer.R
 import com.kabos.silenttimer.presentation.theme.SilentTimerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WearApp("Android")
+            SilentTimerTheme {
+                WearApp("Android")
+            }
         }
     }
 }
