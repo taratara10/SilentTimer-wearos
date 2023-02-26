@@ -3,12 +3,14 @@ package com.kabos.silenttimer.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -19,30 +21,30 @@ class TimerViewModel @Inject constructor() : ViewModel() {
     private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState.Default)
     val uiState: StateFlow<TimerUiState> = _uiState.asStateFlow()
 
-    //todo 本当に？
-    private var timerJob = viewModelScope.launch {
-        while (_uiState.value.inProgress) {
-            delay(1.seconds)
-            _uiState.update {
-                it.copy(
-                    elapsedTime = it.elapsedTime + 1
-                )
-            }
-        }
-    }
+    private var timerJob: Job? = null
 
     fun startTimer() {
         _uiState.update {
             it.copy(inProgress = true)
         }
-        timerJob.start()
+        timerJob = viewModelScope.launch {
+            while (_uiState.value.inProgress) {
+                delay(1.seconds)
+                Timber.d("--ss job start ${uiState.value.elapsedTime}")
+                _uiState.update {
+                    it.copy(
+                        elapsedTime = it.elapsedTime + 1
+                    )
+                }
+            }
+        }
     }
 
     fun stopTimer() {
         _uiState.update {
             it.copy(inProgress = false)
         }
-        timerJob.cancel()
+        timerJob?.cancel()
     }
 }
 

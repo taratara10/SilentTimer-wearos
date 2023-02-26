@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
-
 plugins {
     kotlin("android")
     kotlin("kapt")
@@ -90,4 +88,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    implementation("com.jakewharton.timber:timber:5.0.1")
 }
