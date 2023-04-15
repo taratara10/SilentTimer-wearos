@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -32,13 +31,6 @@ import androidx.wear.compose.material.ProgressIndicatorDefaults
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-
-
-const val TIME_UNIT = 45f
-const val CALC_UNIT = TIME_UNIT * 1000
 
 @Composable
 fun SilentTimerAppHolder(
@@ -58,12 +50,11 @@ fun SilentTimerApp(
     startTimer: () -> Unit,
     stopTimer: () -> Unit,
 ) {
-
     val currentTimerState by remember { mutableStateOf(0f) }
 
     val animatedProgress by animateFloatAsState(
         targetValue = currentTimerState,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
     )
 
     Scaffold(
@@ -88,9 +79,9 @@ fun SilentTimerApp(
 }
 
 @Composable
-private fun Indicator(progress: Float, timeUnit: Float = 45f) {
+private fun Indicator(progress: Float) {
     CircularProgressIndicator(
-        progress = (progress / timeUnit),
+        progress = progress,
         modifier = Modifier.fillMaxSize(),
         startAngle = 290f,
         endAngle = 250f,

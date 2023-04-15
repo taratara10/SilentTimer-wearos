@@ -10,10 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
-
 
 @HiltViewModel
 class TimerViewModel @Inject constructor() : ViewModel() {
@@ -30,7 +28,6 @@ class TimerViewModel @Inject constructor() : ViewModel() {
         timerJob = viewModelScope.launch {
             while (_uiState.value.inProgress) {
                 delay(1.seconds)
-                Timber.d("--ss job start ${uiState.value.elapsedTime}")
                 _uiState.update {
                     it.copy(
                         elapsedTime = it.elapsedTime + 1
@@ -54,17 +51,16 @@ class TimerViewModel @Inject constructor() : ViewModel() {
  */
 data class TimerUiState(
     val inProgress: Boolean = false,
-    val setTimerSecond: Int = 0,
+    val setTimerSecond: Int = 30,
     val elapsedTime: Int = 0,
 ) {
 
     // todo 残り時間を算出する
     val displayElapsedTime: String = Time(elapsedTime).toString()
+    val indicatorProgress: Float = (elapsedTime / setTimerSecond.toFloat())
 
     companion object {
-        val Default = TimerUiState(
-            inProgress = false,
-        )
+        val Default = TimerUiState()
     }
 }
 
