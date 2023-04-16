@@ -13,8 +13,6 @@ import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -50,16 +48,12 @@ fun SilentTimerApp(
     startTimer: () -> Unit,
     stopTimer: () -> Unit,
 ) {
-    val currentTimerState by remember { mutableStateOf(0f) }
-
     val animatedProgress by animateFloatAsState(
-        targetValue = currentTimerState,
+        targetValue = uiState.indicatorProgress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
     )
 
-    Scaffold(
-        timeText = { TimeText() }
-    ) {
+    Scaffold(timeText = { TimeText() }) {
         Box(modifier = Modifier.fillMaxSize()) {
             Indicator(progress = animatedProgress)
             Column(
@@ -67,8 +61,8 @@ fun SilentTimerApp(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CurrentTimeText(countText = uiState.displayElapsedTime)
-                StartButton(
+                DisplaySeconds(currentValue = uiState.remainingTime)
+                StartStopButton(
                     inProgress = uiState.inProgress,
                     startTimer = startTimer,
                     stopTimer = stopTimer,
@@ -90,16 +84,14 @@ private fun Indicator(progress: Float) {
 }
 
 @Composable
-private fun StartButton(
+private fun StartStopButton(
     inProgress: Boolean,
     startTimer: () -> Unit,
     stopTimer: () -> Unit,
 ) {
     Button(
         modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
-        onClick = {
-            if (inProgress) stopTimer() else startTimer()
-        },
+        onClick = { if (inProgress) stopTimer() else startTimer() },
     ) {
         Icon(
             imageVector = if (inProgress) Icons.Rounded.Stop else Icons.Rounded.PlayArrow,
@@ -109,24 +101,24 @@ private fun StartButton(
 }
 
 @Composable
-private fun CurrentTimeText(countText: String) {
+private fun DisplaySeconds(currentValue: String) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         color = MaterialTheme.colors.primary,
-        text = countText,
+        text = currentValue,
         style = MaterialTheme.typography.title1
     )
 }
 
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
-fun DefaultPreviews() {
+private fun DefaultPreviews() {
     SilentTimerApp(
         uiState = TimerUiState(
             inProgress = false,
-            setTimerSecond = 0,
-            elapsedTime = 10
+            setTimerSecond = 0f,
+            elapsedTime = 10f,
         ),
         startTimer = {},
         stopTimer = {}

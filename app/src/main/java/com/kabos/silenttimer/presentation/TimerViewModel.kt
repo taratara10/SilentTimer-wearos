@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class TimerViewModel @Inject constructor() : ViewModel() {
@@ -27,10 +27,11 @@ class TimerViewModel @Inject constructor() : ViewModel() {
         }
         timerJob = viewModelScope.launch {
             while (_uiState.value.inProgress) {
-                delay(1.seconds)
+                // 0.1sec毎に更新
+                delay(10.milliseconds)
                 _uiState.update {
                     it.copy(
-                        elapsedTime = it.elapsedTime + 1
+                        elapsedTime = it.elapsedTime + 10f
                     )
                 }
             }
@@ -51,13 +52,16 @@ class TimerViewModel @Inject constructor() : ViewModel() {
  */
 data class TimerUiState(
     val inProgress: Boolean = false,
-    val setTimerSecond: Int = 30,
-    val elapsedTime: Int = 0,
+    val setTimerSecond: Float = 30_000f,
+    val elapsedTime: Float = 0f,
 ) {
 
-    // todo 残り時間を算出する
-    val displayElapsedTime: String = Time(elapsedTime).toString()
-    val indicatorProgress: Float = (elapsedTime / setTimerSecond.toFloat())
+    val remainingTime: String = Time.calcRemainingTime(
+        setTime = setTimerSecond,
+        elapsedTime = elapsedTime,
+    ).toString()
+
+    val indicatorProgress: Float = (elapsedTime / setTimerSecond)
 
     companion object {
         val Default = TimerUiState()
@@ -68,5 +72,16 @@ data class TimerUiState(
 value class Time(private val value: Int) {
     override fun toString(): String {
         return value.toString()
+    }
+
+    companion object {
+        fun calcRemainingTime(setTime: Float, elapsedTime: Float): Time {
+            val remainingTime = setTime - elapsedTime
+            return if (remainingTime > 0) {
+                Time((remainingTime / 1000f).toInt())
+            } else {
+                Time(0)
+            }
+        }
     }
 }
