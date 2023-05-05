@@ -31,6 +31,7 @@ import androidx.wear.compose.material.ProgressIndicatorDefaults
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
+import com.kabos.silenttimer.component.FlashSurface
 import com.kabos.silenttimer.presentation.theme.Red200
 import com.kabos.silenttimer.presentation.theme.SilentTimerTheme
 
@@ -114,10 +115,14 @@ private fun FinisTimerApp() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DisplaySeconds(
-            currentValue = Time(0),
-            color = Red200,
-        )
+        FlashSurface { modifier ->
+            DisplaySeconds(
+                currentValue = Time(0),
+                color = Red200,
+                modifier = modifier,
+            )
+        }
+
         Button(
             modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
             colors = ButtonDefaults.buttonColors(
@@ -133,6 +138,8 @@ private fun FinisTimerApp() {
         }
     }
 }
+
+/** component */
 
 @Composable
 private fun Indicator(
@@ -169,14 +176,15 @@ private fun StartStopButton(
 @Composable
 private fun DisplaySeconds(
     currentValue: Time,
+    modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.primary,
 ) {
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         color = color,
         text = currentValue.toString(),
-        style = MaterialTheme.typography.title1
+        style = MaterialTheme.typography.title1,
     )
 }
 
@@ -197,7 +205,7 @@ private fun DefaultPreviews() {
 
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
-fun PreviewFinish() {
+private fun PreviewFinish() {
     SilentTimerTheme {
         FinisTimerApp()
     }
