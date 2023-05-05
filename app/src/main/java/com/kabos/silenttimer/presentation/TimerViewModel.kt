@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @HiltViewModel
 class TimerViewModel @Inject constructor() : ViewModel() {
@@ -52,16 +54,18 @@ class TimerViewModel @Inject constructor() : ViewModel() {
  */
 data class TimerUiState(
     val inProgress: Boolean = false,
-    val setTimerSecond: Float = 30_000f,
+    val setTimerSecond: Float = 10_000f,
     val elapsedTime: Float = 0f,
 ) {
 
-    val remainingTime: String = Time.calcRemainingTime(
+    val remainingTime: Time = Time.calcRemainingTime(
         setTime = setTimerSecond,
         elapsedTime = elapsedTime,
-    ).toString()
+    )
 
     val indicatorProgress: Float = (elapsedTime / setTimerSecond)
+
+    val isFinished: Boolean = elapsedTime >= setTimerSecond
 
     companion object {
         val Default = TimerUiState()
@@ -71,7 +75,14 @@ data class TimerUiState(
 @JvmInline
 value class Time(private val value: Int) {
     override fun toString(): String {
-        return value.toString()
+        return  convertTommss()
+    }
+
+    private fun convertTommss(): String {
+        val duration = (this.value * 1_000).toDuration(DurationUnit.MILLISECONDS)
+        return duration.toComponents { minutes, seconds, _ ->
+            String.format("%02d:%02d", minutes, seconds)
+        }
     }
 
     companion object {
